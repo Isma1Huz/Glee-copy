@@ -1,0 +1,88 @@
+/* App-specific styles */
+
+/* Ensure smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar for cleaner look while maintaining functionality */
+body::-webkit-scrollbar {
+  width: 6px;
+}
+
+body::-webkit-scrollbar-track {
+  background: #0B0B10;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: #FF2D8F;
+  border-radius: 3px;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(255, 45, 143, 0.3);
+  color: #F6F6F8;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid #FF2D8F;
+  outline-offset: 2px;
+}
+
+/* Prevent text selection on interactive elements */
+button, .chip, .filter-chip {
+  user-select: none;
+}
+
+/* Smooth image loading */
+img {
+  transition: opacity 0.3s ease;
+}
+
+img[src=""] {
+  opacity: 0;
+}
+
+/* Dialog overlay styling */
+[data-state="open"] > [data-radix-dialog-overlay] {
+  background: rgba(11, 11, 16, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+/* Tab styling */
+[data-state="active"][role="tab"] {
+  background: #FF2D8F;
+  color: white;
+}
+
+/* Input date picker styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Responsive typography adjustments */
+@media (max-width: 640px) {
+  .section-pinned h2 {
+    font-size: clamp(2rem, 10vw, 4rem) !important;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

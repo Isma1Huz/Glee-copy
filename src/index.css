@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 20% 4%;
+    --foreground: 240 10% 97%;
+    --card: 240 15% 8%;
+    --card-foreground: 240 10% 97%;
+    --popover: 240 15% 8%;
+    --popover-foreground: 240 10% 97%;
+    --primary: 330 100% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 10% 12%;
+    --secondary-foreground: 240 10% 97%;
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 330 100% 59%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 10% 18%;
+    --input: 240 10% 18%;
+    --ring: 330 100% 59%;
+    --radius: 0.625rem;
+    
+    --neon-pink: #FF2D8F;
+    --bg-primary: #0B0B10;
+    --bg-secondary: #141419;
+    --text-primary: #F6F6F8;
+    --text-secondary: #A7A7B2;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-[#0B0B10] text-[#F6F6F8] antialiased;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+  }
+}
+
+@layer components {
+  .neon-text {
+    color: var(--neon-pink);
+    text-shadow: 0 0 18px rgba(255, 45, 143, 0.35);
+  }
+  
+  .neon-border {
+    border: 3px solid var(--neon-pink);
+    border-radius: 26px;
+    box-shadow: 0 0 18px rgba(255, 45, 143, 0.35);
+  }
+  
+  .neon-button {
+    @apply px-6 py-3 rounded-full border-2 border-[#FF2D8F] text-white font-medium transition-all duration-300;
+    box-shadow: 0 0 18px rgba(255, 45, 143, 0.25);
+  }
+  
+  .neon-button:hover {
+    background: rgba(255, 45, 143, 0.15);
+    box-shadow: 0 0 28px rgba(255, 45, 143, 0.45);
+    transform: translateY(-2px);
+  }
+  
+  .neon-button-filled {
+    @apply px-6 py-3 rounded-full bg-[#FF2D8F] text-white font-medium transition-all duration-300;
+    box-shadow: 0 0 18px rgba(255, 45, 143, 0.4);
+  }
+  
+  .neon-button-filled:hover {
+    background: #ff4a9f;
+    box-shadow: 0 0 28px rgba(255, 45, 143, 0.55);
+    transform: translateY(-2px);
+  }
+  
+  .pill-outline {
+    @apply px-5 py-2 rounded-full border-2 border-[#FF2D8F] text-white text-sm font-medium transition-all duration-300;
+  }
+  
+  .pill-outline:hover {
+    background: rgba(255, 45, 143, 0.1);
+  }
+  
+  .pill-filled {
+    @apply px-5 py-2 rounded-full bg-[#FF2D8F] text-white text-sm font-medium;
+  }
+  
+  .mono-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+  }
+  
+  .grain-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+  
+  .section-pinned {
+    @apply relative w-screen h-screen overflow-hidden;
+  }
+  
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(11, 11, 16, 0.4) 100%);
+    pointer-events: none;
+  }
+  
+  .gradient-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(11, 11, 16, 0.35) 0%, rgba(11, 11, 16, 0.75) 100%);
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B0B10;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FF2D8F;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff4a9f;
+}
