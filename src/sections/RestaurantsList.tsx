@@ -1,64 +1,24 @@
 import { useRef, useLayoutEffect } from 'react';
-import { MapPin, Clock, Star, Utensils, ChevronRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { MapPin, Clock, Star, Utensils, ChevronRight, ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { restaurants } from '@/data/restaurants';
 
 gsap.registerPlugin(ScrollTrigger);
 
-interface Restaurant {
-  id: string;
-  name: string;
-  description: string;
-  location: string;
-  hours: string;
-  rating: number;
-  reviews: string;
-  cuisine: string[];
-  priceRange: string;
-  image: string;
-  logo?: string;
-  featured?: boolean;
-}
-
 interface RestaurantsListProps {
-  onViewMenu: (restaurantId: string) => void;
   onBookTable: (restaurantId: string) => void;
 }
 
-const restaurants: Restaurant[] = [
-  {
-    id: 'crafty-chameleon',
-    name: 'Crafty Chameleon Brewery',
-    description: 'Nairobi\'s premier beer garden and microbrewery. Wood-fired pizzas, juicy burgers, and craft beers brewed on-site just 5 meters from the taps.',
-    location: '159 James Gichuru Road, Lavington',
-    hours: 'Mon-Sun: 11AM - 11PM',
-    rating: 4.6,
-    reviews: '500+',
-    cuisine: ['Brewery', 'Pizza', 'Burgers'],
-    priceRange: 'KES 400 - 2,000',
-    image: '/restaurant_frame.jpg',
-    logo: '/crafty_chameleon_logo.png',
-    featured: true
-  },
-  {
-    id: 'oyster-bay',
-    name: 'Oyster Bay',
-    description: 'Upscale seafood restaurant offering fresh ocean delights, premium steaks, and an extensive cocktail menu. Perfect for special occasions and fine dining.',
-    location: 'Kilungu Rd, Nairobi',
-    hours: 'Mon-Sun: 10AM - 11PM',
-    rating: 4.5,
-    reviews: '270+',
-    cuisine: ['Seafood', 'Steaks', 'American'],
-    priceRange: 'KES 1,100 - 7,500',
-    image: '/oyster_bay.jpg',
-    featured: true
-  }
-];
-
-export default function RestaurantsList({ onViewMenu, onBookTable }: RestaurantsListProps) {
+export default function RestaurantsList({ onBookTable }: RestaurantsListProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  // Only show featured restaurants on homepage
+  const featuredRestaurants = restaurants.filter((r) => r.featured);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
@@ -110,19 +70,28 @@ export default function RestaurantsList({ onViewMenu, onBookTable }: Restaurants
     <section ref={sectionRef} className="relative z-50 bg-glee-bg py-[8vh] px-[6vw]">
       {/* Header */}
       <div ref={headerRef} className="mb-10">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-neon-pink/10 flex items-center justify-center">
-            <Utensils className="w-6 h-6 text-neon-pink" />
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-neon-pink/10 flex items-center justify-center">
+              <Utensils className="w-6 h-6 text-neon-pink" />
+            </div>
+            <div>
+              <p className="mono-text text-neon-pink">RESTAURANTS</p>
+              <h2 
+                className="text-white font-display font-black uppercase tracking-tight"
+                style={{ fontSize: 'clamp(2rem, 6vw, 4rem)', lineHeight: 1 }}
+              >
+                DINE WITH US
+              </h2>
+            </div>
           </div>
-          <div>
-            <p className="mono-text text-neon-pink">RESTAURANTS</p>
-            <h2 
-              className="text-white font-display font-black uppercase tracking-tight"
-              style={{ fontSize: 'clamp(2rem, 6vw, 4rem)', lineHeight: 1 }}
-            >
-              DINE WITH US
-            </h2>
-          </div>
+          <Link
+            to="/restaurants"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-neon-pink/40 text-neon-pink hover:bg-neon-pink/10 transition-colors text-sm font-medium whitespace-nowrap"
+          >
+            View All Restaurants
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
         <p className="text-glee-text-muted max-w-xl">
           Discover Nairobi's finest restaurants. From craft breweries to upscale seafood dining, 
@@ -132,7 +101,7 @@ export default function RestaurantsList({ onViewMenu, onBookTable }: Restaurants
 
       {/* Restaurant Cards */}
       <div ref={cardsRef} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {restaurants.map((restaurant) => (
+        {featuredRestaurants.map((restaurant) => (
           <div 
             key={restaurant.id}
             className="restaurant-card group relative overflow-hidden rounded-[26px] bg-glee-bg-secondary border border-white/5 hover:border-neon-pink/30 transition-all duration-500"
@@ -221,7 +190,7 @@ export default function RestaurantsList({ onViewMenu, onBookTable }: Restaurants
                     Book Table
                   </button>
                   <button 
-                    onClick={() => onViewMenu(restaurant.id)}
+                    onClick={() => navigate(`/restaurants/${restaurant.id}`)}
                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-pink text-white text-sm hover:bg-neon-pink/80 transition-colors"
                   >
                     View Menu
