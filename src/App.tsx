@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './App.css';
@@ -18,9 +19,12 @@ import TicketModal from './components/TicketModal';
 import TableBookingModal from './components/TableBookingModal';
 import MenuModal from './components/MenuModal';
 import RestaurantBookingModal from './components/RestaurantBookingModal';
-import RestaurantMenuModal from './components/RestaurantMenuModal';
-import OysterBayMenuModal from './components/OysterBayMenuModal';
-import OrderCheckoutModal from './components/OrderCheckoutModal';
+
+// Pages
+import RestaurantsPage from './pages/RestaurantsPage';
+import RestaurantDetailPage from './pages/RestaurantDetailPage';
+
+import { restaurants } from './data/restaurants';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -36,25 +40,12 @@ interface Event {
   category: string;
 }
 
-interface CartItem {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  quantity: number;
-}
-
 function App() {
   const [ticketModalOpen, setTicketModalOpen] = useState(false);
   const [tableModalOpen, setTableModalOpen] = useState(false);
   const [menuModalOpen, setMenuModalOpen] = useState(false);
   const [restaurantBookingOpen, setRestaurantBookingOpen] = useState(false);
-  const [craftyMenuOpen, setCraftyMenuOpen] = useState(false);
-  const [oysterBayMenuOpen, setOysterBayMenuOpen] = useState(false);
-  const [orderCheckoutOpen, setOrderCheckoutOpen] = useState(false);
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [cartTotal, setCartTotal] = useState(0);
-  const [activeRestaurant, setActiveRestaurant] = useState<'crafty' | 'oysterbay'>('crafty');
+  const [activeRestaurant, setActiveRestaurant] = useState<string>('crafty-chameleon');
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const mainRef = useRef<HTMLElement>(null);
@@ -146,136 +137,103 @@ function App() {
     alert('Membership perks: Early access, exclusive drops, lower fees, and more!');
   };
 
-  // Restaurant handlers
-  const handleRestaurantViewMenu = (restaurantId: string) => {
-    if (restaurantId === 'oyster-bay') {
-      setActiveRestaurant('oysterbay');
-      setOysterBayMenuOpen(true);
-    } else {
-      setActiveRestaurant('crafty');
-      setCraftyMenuOpen(true);
-    }
-  };
-
   const handleRestaurantBookTable = (restaurantId: string) => {
-    if (restaurantId === 'oyster-bay') {
-      setActiveRestaurant('oysterbay');
-    } else {
-      setActiveRestaurant('crafty');
-    }
+    setActiveRestaurant(restaurantId);
     setRestaurantBookingOpen(true);
   };
 
-  const handleMenuCheckout = (cartItems: CartItem[], total: number) => {
-    setCart(cartItems);
-    setCartTotal(total);
-    setCraftyMenuOpen(false);
-    setOysterBayMenuOpen(false);
-    setOrderCheckoutOpen(true);
-  };
+  const getActiveRestaurant = () => restaurants.find((r) => r.id === activeRestaurant);
 
-  const getRestaurantName = () => {
-    return activeRestaurant === 'oysterbay' ? 'Oyster Bay' : 'Crafty Chameleon Brewery';
-  };
+  const getRestaurantName = () => getActiveRestaurant()?.name ?? 'Restaurant';
 
-  const getRestaurantLogo = () => {
-    return activeRestaurant === 'oysterbay' ? '' : '/crafty_chameleon_logo.png';
-  };
+  const getRestaurantLogo = () => getActiveRestaurant()?.logo ?? '';
 
   return (
     <>
-      {/* Grain Overlay */}
-      <div className="grain-overlay" />
+      <Routes>
+        {/* ── Restaurants listing page ── */}
+        <Route path="/restaurants" element={<RestaurantsPage />} />
 
-      {/* Main Content */}
-      <main ref={mainRef} className="relative">
-        {/* Section 1: Hero - z-10 */}
-        <Hero 
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
+        {/* ── Restaurant detail / menu page ── */}
+        <Route path="/restaurants/:id" element={<RestaurantDetailPage />} />
+
+        {/* ── Homepage ── */}
+        <Route
+          path="*"
+          element={
+            <>
+              {/* Grain Overlay */}
+              <div className="grain-overlay" />
+
+              {/* Main Content */}
+              <main ref={mainRef} className="relative">
+                {/* Section 1: Hero - z-10 */}
+                <Hero
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                />
+
+                {/* Section 2: Concert Experience - z-20 */}
+                <ConcertExperience onGetTickets={() => handleGetTickets()} />
+
+                {/* Section 3: Trending Clubs - z-30 */}
+                <TrendingClubs onBookTable={handleBookTable} />
+
+                {/* Section 4: Restaurants List - z-35 */}
+                <RestaurantsList
+                  onBookTable={handleRestaurantBookTable}
+                />
+
+                {/* Section 5: Festival Spotlight - z-40 */}
+                <FestivalSpotlight onExploreLineup={handleExploreLineup} />
+
+                {/* Section 6: Weekend Picks - z-50 (flowing) */}
+                <WeekendPicks
+                  selectedCategory={selectedCategory}
+                  onGetTickets={handleGetTickets}
+                />
+
+                {/* Section 7: Membership - z-50 (flowing) */}
+                <Membership
+                  onJoin={handleJoinMembership}
+                  onViewPerks={handleViewPerks}
+                />
+
+                {/* Section 8: Footer - z-50 (flowing) */}
+                <Footer />
+              </main>
+
+              {/* Modals */}
+              <TicketModal
+                isOpen={ticketModalOpen}
+                onClose={() => setTicketModalOpen(false)}
+                eventTitle={selectedEvent?.title || 'Concert Experience'}
+                eventDate={selectedEvent?.date || 'Mar 14 • 8PM'}
+                eventLocation={selectedEvent?.location || 'Stadium'}
+              />
+
+              <TableBookingModal
+                isOpen={tableModalOpen}
+                onClose={() => setTableModalOpen(false)}
+                clubName="Trending Club"
+              />
+
+              <MenuModal
+                isOpen={menuModalOpen}
+                onClose={() => setMenuModalOpen(false)}
+                venueName="Trending Club"
+              />
+
+              <RestaurantBookingModal
+                isOpen={restaurantBookingOpen}
+                onClose={() => setRestaurantBookingOpen(false)}
+                restaurantName={getRestaurantName()}
+                restaurantLogo={getRestaurantLogo()}
+              />
+            </>
+          }
         />
-
-        {/* Section 2: Concert Experience - z-20 */}
-        <ConcertExperience onGetTickets={() => handleGetTickets()} />
-
-        {/* Section 3: Trending Clubs - z-30 */}
-        <TrendingClubs onBookTable={handleBookTable} />
-
-        {/* Section 4: Restaurants List - z-35 */}
-        <RestaurantsList 
-          onViewMenu={handleRestaurantViewMenu}
-          onBookTable={handleRestaurantBookTable}
-        />
-
-        {/* Section 5: Festival Spotlight - z-40 */}
-        <FestivalSpotlight onExploreLineup={handleExploreLineup} />
-
-        {/* Section 6: Weekend Picks - z-50 (flowing) */}
-        <WeekendPicks 
-          selectedCategory={selectedCategory}
-          onGetTickets={handleGetTickets}
-        />
-
-        {/* Section 7: Membership - z-50 (flowing) */}
-        <Membership 
-          onJoin={handleJoinMembership}
-          onViewPerks={handleViewPerks}
-        />
-
-        {/* Section 8: Footer - z-50 (flowing) */}
-        <Footer />
-      </main>
-
-      {/* Modals */}
-      <TicketModal 
-        isOpen={ticketModalOpen}
-        onClose={() => setTicketModalOpen(false)}
-        eventTitle={selectedEvent?.title || 'Concert Experience'}
-        eventDate={selectedEvent?.date || 'Mar 14 • 8PM'}
-        eventLocation={selectedEvent?.location || 'Stadium'}
-      />
-
-      <TableBookingModal 
-        isOpen={tableModalOpen}
-        onClose={() => setTableModalOpen(false)}
-        clubName="Trending Club"
-      />
-
-      <MenuModal 
-        isOpen={menuModalOpen}
-        onClose={() => setMenuModalOpen(false)}
-        venueName="Trending Club"
-      />
-
-      <RestaurantBookingModal 
-        isOpen={restaurantBookingOpen}
-        onClose={() => setRestaurantBookingOpen(false)}
-        restaurantName={getRestaurantName()}
-        restaurantLogo={getRestaurantLogo()}
-      />
-
-      <RestaurantMenuModal 
-        isOpen={craftyMenuOpen}
-        onClose={() => setCraftyMenuOpen(false)}
-        restaurantName="Crafty Chameleon Brewery"
-        restaurantLogo="/crafty_chameleon_logo.png"
-        onCheckout={handleMenuCheckout}
-      />
-
-      <OysterBayMenuModal 
-        isOpen={oysterBayMenuOpen}
-        onClose={() => setOysterBayMenuOpen(false)}
-        onCheckout={handleMenuCheckout}
-      />
-
-      <OrderCheckoutModal 
-        isOpen={orderCheckoutOpen}
-        onClose={() => setOrderCheckoutOpen(false)}
-        cart={cart}
-        total={cartTotal}
-        restaurantName={getRestaurantName()}
-        restaurantLogo={getRestaurantLogo()}
-      />
+      </Routes>
     </>
   );
 }
